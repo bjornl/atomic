@@ -14,7 +14,7 @@ main()
 	char *d;
 
 	printf("q before alloc: %p %p\n", q, &q);
-	printf("t before alloc: %p %p\n", t, &t);
+	printf("t before alloc: %p %p\n\n", t, &t);
 
 	t = malloc(sizeof(struct atomic_fifo));
 
@@ -34,11 +34,11 @@ main()
 	} else {
 		printf("q is not null\n");
 		__atomic_store(&q->next, &t, __ATOMIC_SEQ_CST);
+		q = q->next;
 	}
 
 	printf("q after attach: %p %p\n", q, &q);
-
-	printf("q data: %s\n", (char *) q->data);
+	printf("q data: %s\n\n", (char *) q->data);
 
 	/* second */
 
@@ -58,9 +58,11 @@ main()
 	} else {
 		printf("q is not null\n");
 		__atomic_store(&q->next, &t, __ATOMIC_SEQ_CST);
+		q = q->next;
 	}
 
 	printf("q after attach: %p %p\n", q, &q);
+	printf("q data: %s\n\n", (char *) q->data);
 
 	/* third */
 
@@ -80,9 +82,11 @@ main()
 	} else {
 		printf("q is not null\n");
 		__atomic_store(&q->next, &t, __ATOMIC_SEQ_CST);
+		q = q->next;
 	}
 
 	printf("q after attach: %p %p\n", q, &q);
+	printf("q data: %s\n\n", (char *) q->data);
 
 	return 0;
 }
