@@ -11,7 +11,7 @@ int
 main()
 {
 	struct atomic_fifo *q = NULL, *t = NULL, *h = NULL;
-	struct atomic_fifo **qp, **tp;
+	struct atomic_fifo **tp;
 	char *d;
 	int i;
 
@@ -29,15 +29,9 @@ main()
 	tp = &t;
 	printf("2 tp: %p %p\n\n", tp, &tp);
 
-	//qp = &q;
-
-	//__atomic_store(qp, tp, __ATOMIC_SEQ_CST);
 	__atomic_store((struct atomic_fifo **) &q, tp, __ATOMIC_SEQ_CST);
 
 	h = q;
-
-	printf("qp: %p %p\n\n", qp, &qp);
-
 
 	printf("Data: %s\n", (char *) q->data);
 	printf("q->next: %p %p\n\n", q->next, &q->next);
@@ -52,9 +46,7 @@ main()
 	printf("t->next: %p %p\n", t->next, &t->next);
 
 	tp = &t;
-	//qp = &q->next;
 
-	//__atomic_store(qp, tp, __ATOMIC_SEQ_CST);
 	__atomic_store((struct atomic_fifo **) &q->next, tp, __ATOMIC_SEQ_CST);
 
 	q = q->next;
@@ -70,9 +62,7 @@ main()
 	printf("t->next: %p %p\n", t->next, &t->next);
 
 	tp = &t;
-	//qp = &q->next;
 
-	//__atomic_store(qp, tp, __ATOMIC_SEQ_CST);
 	__atomic_store((struct atomic_fifo **) &q->next, tp, __ATOMIC_SEQ_CST);
 
 	printf("Data dump:\n");
@@ -80,72 +70,6 @@ main()
 		printf("%d: %s\n", i, (char *) h->data);
 		h = h->next;
 	}
-
-exit(0);
-
-	printf("t after data add: %p %p\n", t, &t);
-	printf("t data: %s\n", (char *) t->data);
-
-	if (!q) {
-		printf("q is null\n");
-		__atomic_store(&q, &t, __ATOMIC_SEQ_CST);
-	} else {
-		printf("q is not null\n");
-		__atomic_store(&q->next, &t, __ATOMIC_SEQ_CST);
-		q = q->next;
-	}
-
-	printf("q after attach: %p %p\n", q, &q);
-	printf("q data: %s\n\n", (char *) q->data);
-
-	/* second */
-
-	free(d);
-	d = strdup("barfoo");
-
-	t = malloc(sizeof(struct atomic_fifo));
-	printf("t after alloc: %p %p\n", t, &t);
-	t->data = (void *) d;
-	t->next = NULL;
-	printf("t after data add: %p %p\n", t, &t);
-	printf("t data: %s\n", (char *) t->data);
-
-	if (!q) {
-		printf("q is null\n");
-		__atomic_store(&q, &t, __ATOMIC_SEQ_CST);
-	} else {
-		printf("q is not null\n");
-		__atomic_store(&q->next, &t, __ATOMIC_SEQ_CST);
-		q = q->next;
-	}
-
-	printf("q after attach: %p %p\n", q, &q);
-	printf("q data: %s\n\n", (char *) q->data);
-
-	/* third */
-
-	free(d);
-	d = strdup("fuubar");
-
-	t = malloc(sizeof(struct atomic_fifo));
-	printf("t after alloc: %p %p\n", t, &t);
-	t->data = (void *) d;
-	t->next = NULL;
-	printf("t after data add: %p %p\n", t, &t);
-	printf("t data: %s\n", (char *) t->data);
-
-	if (!q) {
-		printf("q is null\n");
-		__atomic_store(&q, &t, __ATOMIC_SEQ_CST);
-	} else {
-		printf("q is not null\n");
-		__atomic_store(&q->next, &t, __ATOMIC_SEQ_CST);
-		q = q->next;
-	}
-
-	printf("q after attach: %p %p\n", q, &q);
-	printf("q data: %s\n\n", (char *) q->data);
-
 
 	return 0;
 }
